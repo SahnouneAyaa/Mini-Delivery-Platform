@@ -1,7 +1,7 @@
 "use client";
 import { useState, useCallback } from "react";
 
-export const useModal = (initialState: boolean = false) => {
+export function useModal(initialState = false) {
   const [isOpen, setIsOpen] = useState(initialState);
 
   const openModal = useCallback(() => setIsOpen(true), []);
@@ -9,4 +9,4 @@ export const useModal = (initialState: boolean = false) => {
   const toggleModal = useCallback(() => setIsOpen((prev) => !prev), []);
 
   return { isOpen, openModal, closeModal, toggleModal };
-};
+}

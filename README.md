@@ -60,11 +60,12 @@ Ce projet a été réalisé dans le cadre d'un test technique. Il met en œuvre 
 
 Le projet nécessite Node.js (version 22 ou supérieure recommandée).
 
-   → Télécharger : https://nodejs.org/dist/v22.13.1/node-v22.13.1-x64.msi
-   → Lancer l'installateur et suivre les étapes (tout par défaut)
-   → Vérifier l'installation : ouvrir CMD et taper :
+   - Télécharger : https://nodejs.org/dist/v22.13.1/node-v22.13.1-x64.msi
+   - Lancer l'installateur et suivre les étapes (tout par défaut)
+   - Vérifier l'installation : ouvrir CMD et taper :
         node -v
         npm -v
+     
      Doit afficher quelque chose comme : v22.x.x
 
 
@@ -76,13 +77,13 @@ Le projet nécessite Node.js (version 22 ou supérieure recommandée).
 
 Installer MongoDB Community Server localement :
 
-   → Télécharger : https://www.mongodb.com/try/download/community
-   → Choisir : MSI
-   → Lors de l'installation, cocher :
+   - Télécharger : https://www.mongodb.com/try/download/community
+   - Choisir : MSI
+   - Lors de l'installation, cocher :
         "Install MongoDB as a Service"
         "Install MongoDB Compass"
-   → Laisser tout le reste par défaut
-   → Après installation, ouvrir MongoDB Compass pour vérifier
+   - Laisser tout le reste par défaut
+   - Après installation, ouvrir MongoDB Compass pour vérifier
      que la connexion fonctionne sur : mongodb://localhost:27017
 
 

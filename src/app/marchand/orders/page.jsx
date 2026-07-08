@@ -16,6 +16,7 @@ export default function MerchantOrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [activeOrder, setActiveOrder] = useState(null);
+  const [copiedId, setCopiedId] = useState(null);
 
   const addModal = useModal();
   const assignModal = useModal();
@@ -57,6 +58,13 @@ export default function MerchantOrdersPage() {
     );
   };
 
+  const handleCopyTrackingLink = (order) => {
+    const link = `${window.location.origin}/tracking/${order.trackingId}`;
+    navigator.clipboard.writeText(link);
+    setCopiedId(order._id);
+    setTimeout(() => setCopiedId(null), 1500);
+  };
+
   const columns = [
     { key: "customerName", label: "Client", render: (row) => row.customerName },
     {
@@ -85,6 +93,18 @@ export default function MerchantOrdersPage() {
       key: "createdAt",
       label: "Date",
       render: (row) => new Date(row.createdAt).toLocaleDateString("fr-FR"),
+    },
+    {
+      key: "tracking",
+      label: "Lien client",
+      render: (row) => (
+        <button
+          onClick={() => handleCopyTrackingLink(row)}
+          className="text-[12px] font-semibold text-slate-600 border-none bg-transparent cursor-pointer hover:underline"
+        >
+          {copiedId === row._id ? "Copié !" : "Copier le lien"}
+        </button>
+      ),
     },
     {
       key: "assign",

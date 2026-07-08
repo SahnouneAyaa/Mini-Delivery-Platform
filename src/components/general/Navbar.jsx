@@ -23,7 +23,7 @@ function Navbar() {
   };
 
   return (
-    <div className="flex items-center justify-end p-4 border-b border-slate-200 bg-white">
+    <div className="flex items-center justify-end p-4 border-b border-slate-200">
       <div className="relative" ref={menuRef}>
         <button
           onClick={() => setShowMenu((prev) => !prev)}

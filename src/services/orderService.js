@@ -124,7 +124,7 @@ export async function assignDriverToOrder(merchantId, orderId, driverId) {
   order.status = "assigned";
   await order.save();
 
-  return order;
+  return order.populate("driver", "username email");
 }
 
 export async function updateOrderStatus(driverId, orderId, newStatus) {
@@ -146,14 +146,14 @@ export async function updateOrderStatus(driverId, orderId, newStatus) {
   order.status = newStatus;
   await order.save();
 
-  return order;
+  return order.populate("merchant", "username email");
 }
 
 export async function getOrderByTrackingId(trackingId) {
   await connectDB();
 
   const order = await Order.findOne({ trackingId }).select(
-    "customerName deliveryAddress status trackingId createdAt",
+    "customerName deliveryAddress status trackingId createdAt products total",
   );
 
   if (!order) throw new AppError("Commande introuvable", 404);

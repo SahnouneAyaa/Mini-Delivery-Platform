@@ -44,8 +44,18 @@ export default function DriverDashboardPage() {
   }, []);
 
   if (loading)
-    return <p className="text-slate-500">Chargement du tableau de bord...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-slate-500">Chargement du tableau de bord...</p>
+      </div>
+    );
+
+  if (error)
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
 
   const cards = [
     {

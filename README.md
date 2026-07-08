@@ -106,7 +106,7 @@ npm install
 
 ---
 
-## 5. Lancer le projet
+## 4. Lancer le projet
 
 Mode développement :
 

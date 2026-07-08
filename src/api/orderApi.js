@@ -40,7 +40,7 @@ export async function createOrder(data) {
 }
 
 export async function fetchAvailableDrivers() {
-  const res = await fetch("/api/drivers/available");
+  const res = await fetch("/api/driver/available");
   const body = await res.json();
 
   if (!res.ok) {

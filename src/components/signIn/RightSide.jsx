@@ -8,8 +8,7 @@ import { Mail, Lock, User } from "lucide-react";
 import ModalInput from "@/components/forms/ModalInput";
 import { loginSchema, registerSchema } from "@/lib/validation/authSchemas";
 
-const dashboardPath = (role) =>
-  role === "merchant" ? "/marchand/dashboard" : "/driver/dashboard";
+const dashboardPath = (role) => (role === "merchant" ? "/marchand/dashboard" : "/driver/dashboard");
 
 function RightSide() {
   const [mode, setMode] = useState("login");
@@ -26,6 +25,8 @@ function RightSide() {
     reset,
   } = useForm({
     resolver: zodResolver(isLogin ? loginSchema : registerSchema),
+    mode: "onChange",
+    reValidateMode: "onChange",
   });
 
   const switchMode = () => {
@@ -100,12 +101,10 @@ function RightSide() {
           {isLogin ? "Connexion" : "Créer un compte"}
         </h2>
         <p className="text-sm text-slate-500 mb-8">
-          {isLogin
-            ? "Connectez-vous pour accéder à votre espace"
-            : "Remplissez les informations ci-dessous"}
+          {isLogin ? "Connectez-vous pour accéder à votre espace" : "Remplissez les informations ci-dessous"}
         </p>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-4">
           {!isLogin && (
             <ModalInput
               label="Nom d'utilisateur"
@@ -157,21 +156,17 @@ function RightSide() {
                     <span className="text-sm text-slate-700">Livreur</span>
                   </label>
                 </div>
-                {errors.role && (
-                  <span className="text-xs text-red-500">{errors.role.message}</span>
-                )}
+                {errors.role && <span className="text-xs text-red-500">{errors.role.message}</span>}
               </div>
             </>
           )}
 
-          {serverError && (
-            <p className="text-sm text-red-500 text-center">{serverError}</p>
-          )}
+          {serverError && <p className="text-sm text-red-500 text-center">{serverError}</p>}
 
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 w-full rounded-xl bg-orange-600 text-white font-medium py-2.5 hover:bg-orange-700 transition-colors disabled:opacity-60"
+            className="mt-2 w-full rounded-xl bg-orange-600 text-white font-medium py-2.5 hover:bg-orange-700 transition-colors disabled:opacity-60 cursor-pointer"
           >
             {loading ? "Chargement..." : isLogin ? "Se connecter" : "S'inscrire"}
           </button>
@@ -179,7 +174,7 @@ function RightSide() {
 
         <p className="text-sm text-slate-500 text-center mt-6">
           {isLogin ? "Vous n'avez pas de compte ?" : "Vous avez déjà un compte ?"}{" "}
-          <button onClick={switchMode} className="text-orange-600 font-medium hover:underline">
+          <button onClick={switchMode} className="text-orange-600 font-medium hover:underline cursor-pointer">
             {isLogin ? "S'inscrire" : "Se connecter"}
           </button>
         </p>

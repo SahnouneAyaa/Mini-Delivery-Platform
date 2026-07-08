@@ -6,7 +6,9 @@ export async function PATCH(req, { params }) {
   try {
     const user = await requireUser(["merchant"]);
     const { driverId } = await req.json();
-    const order = await assignDriverToOrder(user.id, params.id, driverId);
+    const { id } = await params;
+
+    const order = await assignDriverToOrder(user.id, id, driverId);
     return ok(order);
   } catch (err) {
     return apiError(err);

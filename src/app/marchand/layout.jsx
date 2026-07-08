@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { LayoutDashboard, Package } from "lucide-react";
 import Menu from "@/components/general/Menu";
+import Navbar from "@/components/general/Navbar";
 
 const merchantLinks = [
   { href: "/marchand/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
@@ -26,6 +27,7 @@ export default function MerchantLayout({ children }) {
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden">
+        <Navbar />
         <div className="flex-1 overflow-y-auto p-4 lg:p-8">{children}</div>
       </main>
     </div>

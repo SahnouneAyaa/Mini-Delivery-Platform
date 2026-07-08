@@ -20,21 +20,24 @@ async function isDriverAvailable(driverId) {
   return activeCount === 0;
 }
 
-export async function createOrder(merchantId, { customerName, deliveryAddress, products, total }) {
+export async function createOrder(
+  merchantId,
+  { customerName, deliveryAddress, products, total },
+) {
   if (!customerName || !deliveryAddress || !products || total === undefined) {
     throw new AppError("Tous les champs sont requis", 400);
   }
-
   if (!Array.isArray(products) || products.length === 0) {
     throw new AppError("La commande doit contenir au moins un produit", 400);
   }
-
   for (const p of products) {
     if (!p.name || !p.quantity || p.quantity < 1) {
-      throw new AppError("Chaque produit doit avoir un nom et une quantité valide", 400);
+      throw new AppError(
+        "Chaque produit doit avoir un nom et une quantité valide",
+        400,
+      );
     }
   }
-
   if (total < 0) {
     throw new AppError("Le total ne peut pas être négatif", 400);
   }
@@ -48,7 +51,6 @@ export async function createOrder(merchantId, { customerName, deliveryAddress, p
     products,
     total,
   });
-
   return order;
 }
 
@@ -61,9 +63,13 @@ export async function getMerchantOrders(merchantId) {
 
 export async function getDriverOrders(driverId) {
   await connectDB();
-  return Order.find({ driver: driverId })
+  const orders = await Order.find({ driver: driverId })
     .populate("merchant", "username email")
     .sort({ createdAt: -1 });
+
+  console.log("DEBUG driver orders:", JSON.stringify(orders, null, 2));
+
+  return orders;
 }
 
 export async function getAvailableDrivers() {
@@ -101,27 +107,18 @@ export async function assignDriverToOrder(merchantId, orderId, driverId) {
   await connectDB();
 
   const order = await Order.findById(orderId);
-  if (!order) {
-    throw new AppError("Commande introuvable", 404);
-  }
-
-  if (order.merchant.toString() !== merchantId) {
+  if (!order) throw new AppError("Commande introuvable", 404);
+  if (order.merchant.toString() !== merchantId)
     throw new AppError("Accès refusé à cette commande", 403);
-  }
-
-  if (order.status !== "pending_assignment") {
+  if (order.status !== "pending_assignment")
     throw new AppError("Cette commande a déjà un livreur assigné", 400);
-  }
 
   const driver = await User.findOne({ _id: driverId, role: "driver" });
-  if (!driver) {
-    throw new AppError("Livreur introuvable", 404);
-  }
+  if (!driver) throw new AppError("Livreur introuvable", 404);
 
   const available = await isDriverAvailable(driverId);
-  if (!available) {
+  if (!available)
     throw new AppError("Ce livreur n'est pas disponible actuellement", 400);
-  }
 
   order.driver = driverId;
   order.status = "assigned";
@@ -134,17 +131,16 @@ export async function updateOrderStatus(driverId, orderId, newStatus) {
   await connectDB();
 
   const order = await Order.findById(orderId);
-  if (!order) {
-    throw new AppError("Commande introuvable", 404);
-  }
-
-  if (!order.driver || order.driver.toString() !== driverId) {
+  if (!order) throw new AppError("Commande introuvable", 404);
+  if (!order.driver || order.driver.toString() !== driverId)
     throw new AppError("Accès refusé à cette commande", 403);
-  }
 
   const expectedNext = STATUS_FLOW[order.status];
   if (!expectedNext || expectedNext !== newStatus) {
-    throw new AppError(`Transition invalide : de "${order.status}" vers "${newStatus}"`, 400);
+    throw new AppError(
+      `Transition invalide : de "${order.status}" vers "${newStatus}"`,
+      400,
+    );
   }
 
   order.status = newStatus;
@@ -157,13 +153,10 @@ export async function getOrderByTrackingId(trackingId) {
   await connectDB();
 
   const order = await Order.findOne({ trackingId }).select(
-    "customerName deliveryAddress status trackingId createdAt"
+    "customerName deliveryAddress status trackingId createdAt",
   );
 
-  if (!order) {
-    throw new AppError("Commande introuvable", 404);
-  }
-
+  if (!order) throw new AppError("Commande introuvable", 404);
   return order;
 }
 
@@ -181,7 +174,6 @@ export async function getMerchantStats(merchantId) {
     in_delivery: 0,
     delivered: 0,
   };
-
   results.forEach((r) => {
     counts[r._id] = r.count;
   });
@@ -191,6 +183,29 @@ export async function getMerchantStats(merchantId) {
   return {
     total,
     pending_assignment: counts.pending_assignment,
+    in_delivery: counts.in_delivery,
+    delivered: counts.delivered,
+  };
+}
+
+export async function getDriverStats(driverId) {
+  await connectDB();
+
+  const results = await Order.aggregate([
+    { $match: { driver: new mongoose.Types.ObjectId(driverId) } },
+    { $group: { _id: "$status", count: { $sum: 1 } } },
+  ]);
+
+  const counts = { assigned: 0, in_delivery: 0, delivered: 0 };
+  results.forEach((r) => {
+    if (counts[r._id] !== undefined) counts[r._id] = r.count;
+  });
+
+  const total = counts.assigned + counts.in_delivery + counts.delivered;
+
+  return {
+    total,
+    assigned: counts.assigned,
     in_delivery: counts.in_delivery,
     delivered: counts.delivered,
   };

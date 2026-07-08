@@ -6,7 +6,9 @@ export async function PATCH(req, { params }) {
   try {
     const user = await requireUser(["driver"]);
     const { status } = await req.json();
-    const order = await updateOrderStatus(user.id, params.id, status);
+    const { id } = await params;
+
+    const order = await updateOrderStatus(user.id, id, status);
     return ok(order);
   } catch (err) {
     return apiError(err);
